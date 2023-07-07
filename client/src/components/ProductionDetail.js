@@ -7,7 +7,7 @@ function ProductionDetail({handleEdit, deleteProduction, currentUser}) {
   const [error, setError] = useState(null)
   const {prodId} = useParams()
   const history = useHistory()
-  
+  debugger
   //Student Challenge: GET One 
   
   useEffect(()=>{

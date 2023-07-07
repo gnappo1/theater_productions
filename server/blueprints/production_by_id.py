@@ -9,6 +9,7 @@ from blueprints import (
     login_required,
 )
 from models import db
+from models.production import Production
 from schemas.production_schema import ProductionSchema
 
 production_schema = ProductionSchema()
@@ -19,14 +20,16 @@ production_by_id_bp = Blueprint(
 
 class ProductionByID(Resource):
     def get(self, id):
-        serialized_data = production_schema.dump(g.get("data"))
+        production = db.session.get(Production, id)
+        serialized_data = production_schema.dump(production)
         return make_response(serialized_data, 200)
 
-    @login_required
+    
     def patch(self, id):
         try:
             # * The before_action stored inside g under a key called 'data' the production
-            production = g.get("data")
+            production = Production.query.get(id)
+
             # * get the data out of the request
             data = request.json
 
@@ -48,10 +51,11 @@ class ProductionByID(Resource):
         except (ValidationError, ValueError) as e:
             abort(400, str(e))
 
-    @login_required
+    
     def delete(self, id):
         try:
-            db.session.delete(g.get("data"))
+            production = db.session.get(Production, id)
+            db.session.delete(production)
             db.session.commit()
             return make_response("", 204)
         except ValueError as e:

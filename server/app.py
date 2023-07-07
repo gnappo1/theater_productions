@@ -7,7 +7,8 @@ from flask import (
     jsonify,
     abort,
     session,
-    make_response
+    make_response,
+    render_template
 )
 from flask_migrate import Migrate
 from flask_restful import Api
@@ -22,7 +23,7 @@ from schemas import ma
 from schemas.user_schema import user_schema
 from models import db
 from models.user import bcrypt, User
-from flask_dotenv import DotEnv
+from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 import os
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required, JWTManager, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
@@ -39,9 +40,14 @@ def create_app():
     from blueprints.crew_member_by_id import CrewMemberByID, crew_member_schema
 
     #* Instantiate your flask app
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder="../client/build",
+        template_folder="../client/build/",
+        static_url_path=""
+    )
     #* DotEnv wrapper
-    env = DotEnv(app)
+    load_dotenv()
     #* Configuration settings
     #* Where is the db? /// -> relative path | //// -> absolute path
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
@@ -105,31 +111,31 @@ def create_app():
                     abort(404, f"Could not find {str(class_)} with id {id_}")
 
     def register_routes():
-        @app.route("/")
-        def welcome():
-            #! You can use a template for the landing page of your api-only flask app
-            #! or you can just return a string
-            #* This landing page is not of great importance, but it's nice to have one
-            #* The real one will live inside the client folder
-            return """
-                <h1>Welcome to our Theater!</h1>
-                <figure>
-                    <img style="width: 80vw; height: 70vh;" src="https://images.unsplash.com/photo-1503095396549-807759245b35?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=kyle-head-p6rNTdAPbuk-unsplash.jpg" alt="Theater">
-                    <figcaption>
-                        <span class="caption">A theater red backdrop, with the shadows of three actors in front of it.</span>
-                        <i class="photo-credit">Photo by <a href="https://unsplash.com/it/@kyleunderscorehead?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kyle Head</a> on <a href="https://unsplash.com/photos/p6rNTdAPbuk?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></i>
-                    </figcaption>
-                </figure>
-                <p>Check out our <a href="/api/v1/productions">productions</a> and <a href="/api/v1/crew-members">crew members</a>!</p>
-            """
+        # @app.route("/")
+        # def welcome():
+        #     #! You can use a template for the landing page of your api-only flask app
+        #     #! or you can just return a string
+        #     #* This landing page is not of great importance, but it's nice to have one
+        #     #* The real one will live inside the client folder
+        #     return """
+        #         <h1>Welcome to our Theater!</h1>
+        #         <figure>
+        #             <img style="width: 80vw; height: 70vh;" src="https://images.unsplash.com/photo-1503095396549-807759245b35?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=kyle-head-p6rNTdAPbuk-unsplash.jpg" alt="Theater">
+        #             <figcaption>
+        #                 <span class="caption">A theater red backdrop, with the shadows of three actors in front of it.</span>
+        #                 <i class="photo-credit">Photo by <a href="https://unsplash.com/it/@kyleunderscorehead?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kyle Head</a> on <a href="https://unsplash.com/photos/p6rNTdAPbuk?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></i>
+        #             </figcaption>
+        #         </figure>
+        #         <p>Check out our <a href="/api/v1/productions">productions</a> and <a href="/api/v1/crew-members">crew members</a>!</p>
+        #     """
+        
+        @app.route('/')
+        def index():
+            return render_template("index.html")
 
-        @app.route("/login", methods=["POST"])
-        def login():
-            user_info = request.get_json()
-            
     # Register error handlers, before request function, and routes
     register_error_handlers()
-    register_before_request()
+    # register_before_request()
     register_routes()
     return app, models_map
 

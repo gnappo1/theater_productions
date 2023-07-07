@@ -12,7 +12,7 @@ class CrewMembers(Resource):
         crew = crew_members_schema.dump(CrewMember.query.all())
         return make_response(crew, 200)
     
-    @login_required
+    
     def post(self):
         try:
             data = request.json
