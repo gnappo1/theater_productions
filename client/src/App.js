@@ -149,7 +149,7 @@ function App() {
   const handleEdit = (production) => {
     setProductionEdit(current => !current)
     history.push({
-      pathname: `/productions/edit/${production.id}`,
+      pathname: `/productions/${production.id}/edit`,
       state: production
     })
   }
@@ -188,7 +188,7 @@ function App() {
       <Route  path='/productions/new'>
         <ProductionForm addProduction={addProduction}/>
       </Route>
-      <Route  path='/productions/edit/:id'>
+      <Route  path='/productions/:id/edit'>
         <ProductionEdit updateProduction={updateProduction} production_edit={production_edit}/>
       </Route>
       <Route path='/productions/:prodId'>
