@@ -130,6 +130,9 @@ def create_app():
         #     """
         
         @app.route('/')
+        @app.route('/productions/<int:id>')
+        @app.route('/productions/<int:id>/edit')
+        @app.route('/productions/new')
         @app.route('/<int:id>')
         def index(id=0):
             return render_template("index.html")
