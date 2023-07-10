@@ -129,8 +129,9 @@ def create_app():
         #         <p>Check out our <a href="/api/v1/productions">productions</a> and <a href="/api/v1/crew-members">crew members</a>!</p>
         #     """
         
-        @app.route('/')
-        def index():
+        @app.route('/', defaults={'path': ''})
+        @app.route('/<path:path>')
+        def index(path):
             return render_template("index.html")
 
     # Register error handlers, before request function, and routes
